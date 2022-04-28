@@ -1,0 +1,32 @@
+.link{
+    stroke-width: 8;
+    stroke: white;
+}
+
+.graph{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.graph-svg{
+    width: 100%;
+    height: 800px;
+    background-color: #0a1644;
+}
+
+.graph-header{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.message-circle{
+    stroke: black;
+}
+
+.node{
+    stroke: black;
+}
