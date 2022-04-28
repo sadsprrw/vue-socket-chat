@@ -56,10 +56,10 @@ export default {
   },
 
   methods: {
-    message: function(source, target){
+    message: function(source , target){
       this.offset = this.svgDoc.getBoundingClientRect();
-      let s_node = this.node.nodes().find(x => x.id === source),
-          t_node = this.node.nodes().find(x => x.id === target)
+      let s_node = this.node.nodes().find(x => x.id === source.id),
+          t_node = this.node.nodes().find(x => x.id === target.id)
       let s_abs_coords = this.getAbsoluteCoords(s_node),
           t_abs_coords = this.getAbsoluteCoords(t_node)
       // console.log("ALALALAL", s_node.style['fill'])

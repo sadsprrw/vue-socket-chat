@@ -77,10 +77,7 @@ def client_send(data):
             'to': data['to']['id'],
             'from': request.sid
         }, to=data['to']['id'])
-        emit('MESSAGE_ANIMATION', {
-            'target': data['to']['username'],
-            'source': data['user']
-        }, broadcast=True)
+        emit('MESSAGE_ANIMATION', new_connect, broadcast=True)
     else:
         print('empty message')
 

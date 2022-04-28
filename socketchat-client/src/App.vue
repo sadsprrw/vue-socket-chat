@@ -23,15 +23,16 @@ import OnlinePeople from "@/components/ui-modules/OnlinePeople.vue";
 import ChatGraph from "@/components/ui-modules/ChatGraph.vue";
 import ChatLogIn from "@/components/ui-modules/ChatLogIn.vue";
 
+import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/types/ChatTypes';
 @Options({
   data() {
     return {
       user: null,
       currentUserChat: null,
-      allMessages: {},
-      chatConnections: [],
+      allMessages: {} ,
+      chatConnections: [] as Connection[],
       currentMessages: null,
-      onlineUsers: {},
+      onlineUsers: {} as OnlineUsers,
       socket:io('http://localhost:2345'),
       validate: false
     }
@@ -43,23 +44,23 @@ import ChatLogIn from "@/components/ui-modules/ChatLogIn.vue";
     ChatLogIn
   },
   mounted() {
-    this.socket.on('MESSAGE', (socket) => {
-      if (!this.allMessages[socket['from']]){
-        this.allMessages[socket['from']] = [socket['message']]
+    this.socket.on('MESSAGE', (socket : ChatMessage) => {
+      if (!this.allMessages[socket.from]){
+        this.allMessages[socket.from] = [socket.message]
       }
-      else this.allMessages[socket['from']].push(socket['message']);
+      else this.allMessages[socket.from].push(socket.message);
 
       console.log(this.allMessages);
     })
-    this.socket.on('USER_ONLINE_PUBLIC_DATA', (socket) => {
+    this.socket.on('USER_ONLINE_PUBLIC_DATA', (socket : OnlineUsers) => {
       this.onlineUsers = socket;
       console.log("Online Users:");
       console.log(socket);
     })
-    this.socket.on('NEW_USER', (socket) => {
+    this.socket.on('NEW_USER', (socket : NewUserData) => {
       this.onlineUsers[socket['id']] = {'username': socket['username'], 'color': socket['color']}
     })
-    this.socket.on('DELETE_USER', (socket) => {
+    this.socket.on('DELETE_USER', (socket : NewUserData) => {
       delete this.onlineUsers[socket['id']]
       if(this.currentUserChat !== null) {
         if (socket['username'] === this.currentUserChat['username']) {
@@ -71,19 +72,19 @@ import ChatLogIn from "@/components/ui-modules/ChatLogIn.vue";
         delete this.allMessages[socket['id']]
       }
     })
-    this.socket.on('CONNECTION_DATA', (socket) => {
+    this.socket.on('CONNECTION_DATA', (socket : Connection[]) => {
       this.chatConnections = socket;
       console.log(socket)
     })
-    this.socket.on('NEW_CONNECTION', (socket) => {
+    this.socket.on('NEW_CONNECTION', (socket : Connection) => {
       this.chatConnections.push(socket)
     })
-    this.socket.on('MESSAGE_ANIMATION', (socket) => {
+    this.socket.on('MESSAGE_ANIMATION', (socket : Connection) => {
       this.$refs.messageAnimation.message(socket['source'], socket['target'])
     })
   },
   methods: {
-    loginUser(username, color){
+    loginUser(username : string, color : string){
       if (this.userExists(username)){
         this.validate = true
       }
@@ -92,7 +93,7 @@ import ChatLogIn from "@/components/ui-modules/ChatLogIn.vue";
         this.socket.emit('login', this.user)
       }
     },
-    sendMessage(message) {
+    sendMessage(message : string) {
       if (this.currentUserChat != null) {
         if(message !== '') {
           const data = {
@@ -110,12 +111,13 @@ import ChatLogIn from "@/components/ui-modules/ChatLogIn.vue";
         }
       }
     },
-    chatSelected(index , username){
+    chatSelected(index : string, username : string){
       this.currentUserChat = {'id': index, 'username': username}
       this.currentMessages = this.allMessages[this.currentUserChat['id']]
     },
-    userExists(username){
-      return Object.values(this.onlineUsers).find(x => x['username'] === username);
+    userExists(username : string){
+      let onlineUsersValues : UserData[] = Object.values(this.onlineUsers)
+      return onlineUsersValues.find((value : UserData)  => (value['username'] === username));
     }
   }
 })
