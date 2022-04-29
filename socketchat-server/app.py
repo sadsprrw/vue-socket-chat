@@ -18,51 +18,41 @@ def check_connection(connection):
     return True
 
 
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
-
 @socketio.on('connect')
 def client_connect():
-    print('client connected')
     emit('USER_ONLINE_PUBLIC_DATA', users_online)
 
 
 @socketio.on('login')
 def user_login(data):
-    print('user logged in')
     users_online[request.sid] = {
         'username': data['name'],
         'color': data['color']
     }
-    print(users_online)
     emit('NEW_USER', {'id': request.sid, 'username': data['name'], 'color': data['color']}, broadcast=True)
     emit('CONNECTION_DATA', connections)
 
 
 @socketio.on('disconnect')
 def client_disconnect():
-    print('client disconnected')
     global connections
     if request.sid in users_online:
-        username = users_online[request.sid]['username']
-        old_connections = list(
-            filter(lambda conn: conn['target'] == {'id': username} or conn['source'] == {'id': username}, connections))
-        if len(connections) != 0:
+        username = {'id': users_online[request.sid]['username']}
+        old_connections = [x for x in connections if
+                           x['target'] == username or x['source'] == username]
+
+        if len(old_connections) != 0:
             for conn in old_connections:
                 connections.remove(conn)
-            print(connections)
             emit('CONNECTION_DATA', connections, broadcast=True)
         del users_online[request.sid]
-        emit('DELETE_USER', {'id': request.sid, 'username': username}, broadcast=True)
+        emit('DELETE_USER', {'id': request.sid, 'username': username['id']}, broadcast=True)
 
 
 @socketio.on('send_message')
 def client_send(data):
     global connections
     if data['msg'].strip() != '':
-        print('client sended message')
         message = {
             'user': users_online[request.sid]['username'],
             'msg': data['msg'],
@@ -84,5 +74,5 @@ def client_send(data):
 
 if __name__ == '__main__':
     app.debug = True
-    socketio.run(app, port=2345)
+    socketio.run(app, port=8000)
     app.run()

@@ -12,7 +12,6 @@
       <div :class="validate ? 'login-error' : 'disabled' ">This username is already taken</div>
       <button class="login-button" v-on:click="login">Go!</button>
     </div>
-
   </div>
 
 </template>
@@ -44,6 +43,5 @@ export default {
 </script>
 
 <style scoped>
-@import "../../scss/login.scss";
-
+@import "../../css/login.css";
 </style>

@@ -6,7 +6,7 @@
       <div class="messages-area">
         <div  v-for="(val, inx) in this.messages" :key="inx" class="message">
           <div v-if="val['type'] === 'received'" class="dialog-message">
-            <div class="dialog-message-text"> {{val['user']}}: {{val['msg']}}</div>
+            <div class="dialog-message-text"> {{val['msg']}} </div>
           </div>
           <div v-else-if="val['type'] === 'sent'" class="user-message">
             <div class="user-message-text">{{val['msg']}}</div>
@@ -48,5 +48,5 @@ export default {
 </script>
 
 <style scoped>
-@import "../../scss/message.css";
+@import "../../css/message.css";
 </style>

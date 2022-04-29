@@ -33,7 +33,7 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
       chatConnections: [] as Connection[],
       currentMessages: null,
       onlineUsers: {} as OnlineUsers,
-      socket:io('http://localhost:2345'),
+      socket:io('http://localhost:8000'),
       validate: false
     }
   },
@@ -44,23 +44,19 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
     ChatLogIn
   },
   mounted() {
-    this.socket.on('MESSAGE', (socket : ChatMessage) => {
+    this.socket.on('MESSAGE', (socket: ChatMessage) => {
       if (!this.allMessages[socket.from]){
         this.allMessages[socket.from] = [socket.message]
       }
       else this.allMessages[socket.from].push(socket.message);
-
-      console.log(this.allMessages);
     })
-    this.socket.on('USER_ONLINE_PUBLIC_DATA', (socket : OnlineUsers) => {
+    this.socket.on('USER_ONLINE_PUBLIC_DATA', (socket: OnlineUsers) => {
       this.onlineUsers = socket;
-      console.log("Online Users:");
-      console.log(socket);
     })
-    this.socket.on('NEW_USER', (socket : NewUserData) => {
+    this.socket.on('NEW_USER', (socket: NewUserData) => {
       this.onlineUsers[socket['id']] = {'username': socket['username'], 'color': socket['color']}
     })
-    this.socket.on('DELETE_USER', (socket : NewUserData) => {
+    this.socket.on('DELETE_USER', (socket: NewUserData) => {
       delete this.onlineUsers[socket['id']]
       if(this.currentUserChat !== null) {
         if (socket['username'] === this.currentUserChat['username']) {
@@ -72,19 +68,18 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
         delete this.allMessages[socket['id']]
       }
     })
-    this.socket.on('CONNECTION_DATA', (socket : Connection[]) => {
+    this.socket.on('CONNECTION_DATA', (socket: Connection[]) => {
       this.chatConnections = socket;
-      console.log(socket)
     })
-    this.socket.on('NEW_CONNECTION', (socket : Connection) => {
+    this.socket.on('NEW_CONNECTION', (socket: Connection) => {
       this.chatConnections.push(socket)
     })
-    this.socket.on('MESSAGE_ANIMATION', (socket : Connection) => {
+    this.socket.on('MESSAGE_ANIMATION', (socket: Connection) => {
       this.$refs.messageAnimation.message(socket['source'], socket['target'])
     })
   },
   methods: {
-    loginUser(username : string, color : string){
+    loginUser(username: string, color: string){
       if (this.userExists(username)){
         this.validate = true
       }
@@ -93,9 +88,9 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
         this.socket.emit('login', this.user)
       }
     },
-    sendMessage(message : string) {
+    sendMessage(message: string) {
       if (this.currentUserChat != null) {
-        if(message !== '') {
+        if(message.trim() !== '') {
           const data = {
             user: this.user['name'],
             msg: message,
@@ -111,12 +106,12 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
         }
       }
     },
-    chatSelected(index : string, username : string){
+    chatSelected(index: string, username: string){
       this.currentUserChat = {'id': index, 'username': username}
       this.currentMessages = this.allMessages[this.currentUserChat['id']]
     },
-    userExists(username : string){
-      let onlineUsersValues : UserData[] = Object.values(this.onlineUsers)
+    userExists(username: string){
+      const onlineUsersValues: UserData[] = Object.values(this.onlineUsers)
       return onlineUsersValues.find((value : UserData)  => (value['username'] === username));
     }
   }
@@ -125,5 +120,5 @@ export default class App extends Vue {}
 </script>
 
 <style lang="scss">
-@import "scss/main.scss";
+@import "css/main.scss";
 </style>
