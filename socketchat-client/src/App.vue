@@ -1,8 +1,10 @@
 <template>
   <ChatLogIn :validate="validate"  :on-login="loginUser" v-if="user === null" />
   <div class="main-container" v-else>
+
     <div class="online-people-container">
       <OnlinePeople :user-list="onlineUsers" :user="user" :on-chat-selected="chatSelected" />
+      <b-button>123</b-button>
     </div>
     <div class="chat-container">
       <ChatMessages :send-message="sendMessage" :current-user="currentUserChat" :messages="currentMessages" />
@@ -80,7 +82,7 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
   },
   methods: {
     loginUser(username: string, color: string){
-      if (this.userExists(username)){
+      if (this.userExists(username) || username.trim() === ''){
         this.validate = true
       }
       else {
@@ -112,7 +114,7 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
     },
     userExists(username: string){
       const onlineUsersValues: UserData[] = Object.values(this.onlineUsers)
-      return onlineUsersValues.find((value : UserData)  => (value['username'] === username));
+      return onlineUsersValues.find((value : UserData)  => (value['username'] === username.trim()));
     }
   }
 })

@@ -35,6 +35,7 @@ def user_login(data):
 
 @socketio.on('disconnect')
 def client_disconnect():
+    print('disconnect')
     global connections
     if request.sid in users_online:
         username = {'id': users_online[request.sid]['username']}

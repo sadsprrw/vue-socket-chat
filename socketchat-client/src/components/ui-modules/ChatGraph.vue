@@ -34,66 +34,68 @@ export default {
   },
   mounted() {
     this.svg = d3.select('svg')
-    this.svgDoc = document.getElementById('graph');
 
     const width = this.svg.attr('width')
     const height = this.svg.attr('height')
 
     this.simulation = d3.forceSimulation(this.nodes)
-        .force('charge', d3.forceManyBody().strength(-60))
-        .force('link', d3.forceLink(this.links).distance(50))
-        .force('x', d3.forceX())
-        .force('y', d3.forceY())
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('link', d3.forceLink(this.links).distance(100))
+        .force('x', d3.forceX().x(width/2))
+        .force('y', d3.forceY().y(height/2))
         .alphaTarget(1)
         .on('tick', this.ticked)
 
-    this.g = this.svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
+    this.g = this.svg.append('g').attr('id', 'everything')
+
     this.link = this.g.append('g').attr('stroke', '#000').attr('stroke-width', 1.5).selectAll('.link')
     this.node = this.g.append('g').attr('stroke', '#fff').attr('stroke-width', 1.5).selectAll('.node')
+
+
+    this.svg.call(d3.zoom()
+        .extent([[0, 0], [width, height]])
+        .scaleExtent([1, 8])
+        .on("zoom", this.zoomed));
+
+    // this.node.call(drag).on("click", this.click);
 
     this.restart()
   },
 
   methods: {
     message: function(source , target){
-      this.offset = this.svgDoc.getBoundingClientRect();
       const s_node = this.node.nodes().find(x => x.id === source.id),
           t_node = this.node.nodes().find(x => x.id === target.id)
-      const s_abs_coords = this.getAbsoluteCoords(s_node),
-          t_abs_coords = this.getAbsoluteCoords(t_node)
 
-      const msg_circle = this.svg.append('circle')
+      const msg_circle = this.g.append('circle')
           .attr('fill', s_node.style['fill'])
           .attr('class', 'message-circle')
           .attr('r', 5)
-          .attr('cx', s_abs_coords.x)
-          .attr('cy', s_abs_coords.y)
+          .attr('cx', s_node.getAttribute('cx'))
+          .attr('cy', s_node.getAttribute('cy'))
+
       msg_circle
           .transition()
           .duration(2000)
-          .attr('cx', t_abs_coords.x)
-          .attr('cy', t_abs_coords.y)
+          .attr('cx', t_node.getAttribute('cx'))
+          .attr('cy', t_node.getAttribute('cy'))
           .on('end', () =>{
             msg_circle.remove()
           })
-    },
-    getAbsoluteCoords(elem){
-      const bbox = elem.getBBox(),
-              middleX = bbox.x + (bbox.width / 2),
-              middleY = bbox.y + (bbox.height / 2);
-      const matrix = elem.getScreenCTM()
-      return {
-        x: (matrix.a * middleX) + (matrix.c * middleY) + matrix.e - this.offset.left,
-        y: (matrix.b * middleX) + (matrix.d * middleY) + matrix.f - this.offset.top
-      };
     },
     restart () {
       this.startTime = Date.now()
 
       this.node = this.node.data(this.nodes, function (d) { return d.id })
       this.node.exit().remove()
-      this.node = this.node.enter().append('circle').attr('class', 'node').attr('style', function (d) { return "fill:"+d.color })
-          .attr('id', function (d) { return d.id }).attr('r', 15).merge(this.node)
+      this.node = this.node.enter()
+          .append('circle')
+          .attr('class', 'node')
+          .attr('style', function (d) { return "fill:"+d.color })
+          .attr('id', function (d) { return d.id })
+          .attr('r', 15)
+          .call(this.drag())
+          .merge(this.node)
 
       this.link = this.link.data(this.links, function (d) {
         return d.source.id + '-' + d.target.id
@@ -115,7 +117,30 @@ export default {
             .attr('x2', function (d) { return d.target.x })
             .attr('y2', function (d) { return d.target.y })
     },
+    zoomed({transform}){
+      this.g.attr("transform", transform);
+    },
+    drag(){
+      const dragstarted = d => {
 
+        d.fx = d.x;
+        d.fy = d.y;
+      };
+      const dragged = (event, d) => {
+        console.log(event)
+        d.fx = event.x;
+        d.fy = event.y;
+      };
+      const dragended = d => {
+
+        d.fx = null;
+        d.fy = null;
+      };
+      return d3.drag()
+          .on('start', dragstarted)
+          .on('drag', dragged)
+          .on('end', dragended);
+    },
     updateNodesData(users){
       const values = Object.values(users)
       this.nodes = this.nodes.filter(function (value){
