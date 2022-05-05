@@ -102,7 +102,6 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
     })
   },
   methods: {
-
     loginUser(username: string, color: string){
       if (this.userExists(username) || username.trim() === ''){
         this.validate = true
@@ -112,14 +111,16 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
         this.socket.emit('login', this.user)
       }
     },
+
     checkMenu(){
       if (!this.menuIsOpen)
         return 'left: 0;'
-      else return 'left: -400px;'
+      return 'left: -400px;'
     },
+
     sendMessage(message: string) {
       if (this.currentUserChat != null) {
-        if(message.trim() !== '') {
+        if (message.trim() !== '') {
           const data = {
             user: this.user['name'],
             msg: message,
@@ -135,54 +136,42 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
         }
       }
     },
+
     tabSelected(tab: string){
       if (this.currentTab !== tab)  {
-        if(tab === 'Combined')
+        if (tab === 'Combined')
           this.$refs.chatGraph.updateWidth(window.innerWidth/2)
-        if(tab === 'Graph')
-          this.$refs.chatGraph.updateWidth(window.innerWidth)
+        else if (tab === 'Graph') this.$refs.chatGraph.updateWidth(window.innerWidth)
         this.currentTab = tab
       }
     },
+
     chatSelected(index: string, username: string, color: string){
       this.currentUserChat = {'id': index, 'username': username, 'color': color}
       this.currentMessages = this.allMessages[this.currentUserChat['id']]
     },
+
     userExists(username: string){
       const onlineUsersValues: UserData[] = Object.values(this.onlineUsers)
       return onlineUsersValues.find((value : UserData)  => (value['username'] === username.trim()));
     },
+
     closeChat(){
       this.currentUserChat = null;
     },
+
     selectUserOnGraph(username: string){
-      if(this.user['name'] !== username){
-        if(this.currentTab === 'Graph')
+      if (this.user['name'] !== username){
+        if (this.currentTab === 'Graph')
           this.tabSelected('Combined')
         let chosenUser = this.userExists(username)
-        if(chosenUser)
+        if (chosenUser)
           this.chatSelected(chosenUser['id'], chosenUser['username'], chosenUser['color'])
       }
     },
+
     logOut(){
       // TODO
-    },
-    peopleStyle(){
-      if(this.currentTab === 'Graph' || this.currentTab === 'Combined') return 'display:none'
-      return ''
-    },
-    chatStyle(){
-      if(this.currentTab === 'Graph') return 'display:none;'
-      return ''
-    },
-    menuStyle(){
-      if(this.currentTab === 'Chat') return 'display:none;'
-      return ''
-    },
-    graphStyle(){
-      if(this.currentTab === 'Chat') return 'width:0;'
-      if(this.currentTab === 'Combined') return 'width: 50%'
-      return ''
     }
   }
 })
