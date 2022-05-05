@@ -22,6 +22,16 @@
   background-color: #212121;
 }
 
+.empty-chat-annotation{
+  color: white;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 20px;
+  line-height: 20px;
+  padding: 10px 20px 10px 20px;
+  background-color: #212121;
+}
+
 .chat-current-user{
   padding: 7px 1rem 7px 1rem;
   margin: 0;

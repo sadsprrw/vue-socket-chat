@@ -28,7 +28,7 @@
           </div>
         </div>
         <div class="chat-empty" v-else>
-          <div class="chat-annotation">
+          <div class="empty-chat-annotation">
             Say Hi!
           </div>
         </div>

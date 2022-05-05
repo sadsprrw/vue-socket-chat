@@ -37,3 +37,8 @@
 .graph-transform{
 
 }
+
+.graph-title{
+    height: 100px;
+    background-color: #8774e1;
+}

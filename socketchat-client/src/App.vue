@@ -2,36 +2,30 @@
   <ChatLogIn :validate="validate"  :on-login="loginUser" v-if="user === null" />
   <div class="main-wrap" v-else>
     <div class="main-container" >
-      <ChatHeader :user="user" :on-tab-selected="tabSelected" :current-tab="currentTab"/>
+      <ChatHeader :user="user" :on-tab-selected="tabSelected" :log-out="logOut" :current-tab="currentTab"/>
       <div class="main-chat" >
-<!--        v-if="currentTab === 'Chat'"-->
-          <div :style="currentTab === 'Graph' || currentTab === 'Hybrid' ?
+          <div :style="currentTab === 'Graph' || currentTab === 'Combined' ?
            'display:none' : ''" class="online-people-container">
             <OnlinePeople :on-chat-selected="chatSelected" :current-user="currentUserChat"
-                :user-list="onlineUsers" :user="user"  />
+                          :user-list="onlineUsers" :user="user"  />
           </div>
           <div  :style="currentTab === 'Graph' ? 'display:none;' : ''"  class="chat-container">
             <ChatMessages :close-chat="closeChat" :send-message="sendMessage"
                           :current-user="currentUserChat" :messages="currentMessages" />
           </div>
-          <Slide :style="currentTab === 'Chat' ? 'display:none' : ''" width="400"
-                 :burgerIcon="!menuIsOpen"  :isOpen="menuIsOpen" @closeMenu="menuIsOpen = false" >
+          <Slide :style="currentTab === 'Chat' ? 'display:none' : ''" width="400" :burgerIcon="!menuIsOpen"
+                 :isOpen="menuIsOpen" @closeMenu="menuIsOpen = false" >
             <OnlinePeople  :on-chat-selected="chatSelected" :current-user="currentUserChat"
                            :user-list="onlineUsers" :user="user"/>
           </Slide>
           <transition name="graph-fade">
             <div id="graph-container"  :style="currentTab === 'Chat' ? 'width:0;' :
-                  currentTab === 'Hybrid' ? 'width: 50%' : ''"
-                  class="graph-container">
-
+                  currentTab === 'Combined' ? 'width: 50%' : ''" class="graph-container">
               <ChatGraph :select-user-on-graph="selectUserOnGraph"
                          :user-list="onlineUsers" :connection-list="chatConnections" ref="chatGraph"/>
             </div>
           </transition>
       </div>
-<!--      <div class="main-graph" v-else-if="currentTab === 'Graph'">-->
-<!--        -->
-<!--      </div>-->
     </div>
   </div>
 </template>
@@ -143,7 +137,7 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
     },
     tabSelected(tab: string){
       if (this.currentTab !== tab)  {
-        if(tab === 'Hybrid')
+        if(tab === 'Combined')
           this.$refs.chatGraph.updateWidth(window.innerWidth/2)
         if(tab === 'Graph')
           this.$refs.chatGraph.updateWidth(window.innerWidth)
@@ -164,12 +158,31 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
     selectUserOnGraph(username: string){
       if(this.user['name'] !== username){
         if(this.currentTab === 'Graph')
-          this.tabSelected('Hybrid')
+          this.tabSelected('Combined')
         let chosenUser = this.userExists(username)
         if(chosenUser)
           this.chatSelected(chosenUser['id'], chosenUser['username'], chosenUser['color'])
-          console.log(chosenUser)
       }
+    },
+    logOut(){
+      // TODO
+    },
+    peopleStyle(){
+      if(this.currentTab === 'Graph' || this.currentTab === 'Combined') return 'display:none'
+      return ''
+    },
+    chatStyle(){
+      if(this.currentTab === 'Graph') return 'display:none;'
+      return ''
+    },
+    menuStyle(){
+      if(this.currentTab === 'Chat') return 'display:none;'
+      return ''
+    },
+    graphStyle(){
+      if(this.currentTab === 'Chat') return 'width:0;'
+      if(this.currentTab === 'Combined') return 'width: 50%'
+      return ''
     }
   }
 })

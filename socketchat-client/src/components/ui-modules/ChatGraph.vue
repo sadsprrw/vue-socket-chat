@@ -29,6 +29,7 @@ export default {
       simulation: null,
       link: null,
       node: null,
+      labels: null,
       width: window.innerWidth,
       height: window.innerHeight - 80,
       // simulationTime: 10000,
@@ -58,9 +59,9 @@ export default {
     this.svg.call(d3.zoom()
         .extent([[0, 0], [width, height]])
         .scaleExtent([1, 8])
-        .on("zoom", this.zoomed));
+        .on("zoom", this.zoomed))
+        .on("dblclick.zoom", null)
 
-    // this.node.call(drag).on("click", this.click);
 
     this.restart()
   },
@@ -105,6 +106,8 @@ export default {
           .call(this.drag())
           .on('dblclick', function (event, d) { func(d.id) })
           .merge(this.node)
+
+      this.node.append('title').text(function(d) { return d.id; });
 
       this.link = this.link.data(this.links, function (d) {
         return d.source.id + '-' + d.target.id

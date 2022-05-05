@@ -1,15 +1,46 @@
 from flask import Flask, request
 from flask_socketio import SocketIO, emit
 
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'very_secret'
 app.config['CORS_HEADERS'] = 'Content-Type'
 socketio = SocketIO(app, cors_allowed_origins='*')
 messages = []
-users_online = {}
+users_online = {
+    '1': {'username': 'David', 'color': '#123112', 'id': '1'},
+    '2': {'username': 'Nick', 'color': '#177B5DFF', 'id': '2'},
+    '3': {'username': 'John', 'color': '#501A4FFF', 'id': '3'},
+    '4': {'username': 'Ben', 'color': '#EED90BFF', 'id': '4'},
+    '5': {'username': 'Hanna', 'color': '#E66099FF', 'id': '5'},
+    '6': {'username': 'Gleb', 'color': '#D8EA10FF', 'id': '6'},
+    '7': {'username': 'Dimitryi', 'color': '#10EABEFF', 'id': '7'},
+    '8': {'username': 'Andrew', 'color': '#EA1010FF', 'id': '8'},
+    '9': {'username': 'Igor', 'color': '#FF3900FF', 'id': '9'},
+    '10': {'username': 'Olga', 'color': '#B1FF00FF', 'id': '10'},
+    '11': {'username': 'Ru', 'color': '#0088FFFF', 'id': '11'},
+    '12': {'username': 'Vivi', 'color': '#7C5EFEFF', 'id': '12'},
+    '13': {'username': 'Jen', 'color': '#FEE35EFF', 'id': '13'},
+    '14': {'username': 'Brock', 'color': '#FE5E5EFF', 'id': '14'},
+    '15': {'username': 'San', 'color': '#6D0D19FF', 'id': '15'},
+}
 guests_count = 0
-connections = []
+connections = [
+    {'target': {'id': 'David'}, 'source': {'id': 'Nick'}},
+    {'target': {'id': 'Nick'}, 'source': {'id': 'John'}},
+    {'target': {'id': 'David'}, 'source': {'id': 'John'}},
+    {'target': {'id': 'Ben'}, 'source': {'id': 'Hanna'}},
+    {'target': {'id': 'David'}, 'source': {'id': 'Ben'}},
+    {'target': {'id': 'Brock'}, 'source': {'id': 'San'}},
+    {'target': {'id': 'Jen'}, 'source': {'id': 'San'}},
+    {'target': {'id': 'Vivi'}, 'source': {'id': 'Ru'}},
+    {'target': {'id': 'Vivi'}, 'source': {'id': 'Olga'}},
+    {'target': {'id': 'Olga'}, 'source': {'id': 'Ru'}},
+    {'target': {'id': 'Vivi'}, 'source': {'id': 'Hanna'}},
+    {'target': {'id': 'Igor'}, 'source': {'id': 'Dimitryi'}},
+    {'target': {'id': 'Gleb'}, 'source': {'id': 'Igor'}},
+    {'target': {'id': 'Dimitryi'}, 'source': {'id': 'Gleb'}},
+    {'target': {'id': 'Ben'}, 'source': {'id': 'Olga'}},
+]
 
 
 def check_connection(connection):
