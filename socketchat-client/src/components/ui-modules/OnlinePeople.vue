@@ -43,9 +43,9 @@ export default {
       return 'background-color:' + color
     },
     bindUserClass(username){
-      if(username === this.user['name'])
+      if (username === this.user['name'])
         return 'disabled'
-      if(this.currentUser) {
+      if (this.currentUser) {
         if (username === this.currentUser['username'])
           return 'active'
       }

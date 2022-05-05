@@ -81,7 +81,7 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
     })
     this.socket.on('DELETE_USER', (socket: NewUserData) => {
       delete this.onlineUsers[socket['id']]
-      if(this.currentUserChat !== null) {
+      if (this.currentUserChat !== null) {
         if (socket['username'] === this.currentUserChat['username']) {
           this.currentUserChat = null
           this.currentMessages = null
