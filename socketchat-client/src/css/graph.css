@@ -6,16 +6,19 @@
 .graph{
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: calc(100vh - 80px);
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    -webkit-transition: width 2s, -webkit-transform 2s;
+    transition: width 2s, transform 2s;
 }
 
 .graph-svg{
     width: 100%;
-    height: 800px;
-    background-color: #0a1644;
+    background-color: #212121;
+    border-left: 1px solid #0f0f0f;
+    border-right: 1px solid #0f0f0f;
 }
 
 .graph-header{
@@ -29,4 +32,8 @@
 
 .node{
     stroke: black;
+}
+
+.graph-transform{
+
 }

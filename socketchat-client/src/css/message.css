@@ -1,77 +1,198 @@
 .chat{
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #171529;
 }
 
-.chat-header{
-  padding-top: 20px;
-  padding-bottom: 20px;
+.chat.closed{
+  justify-content: center;
+}
+
+.chat-annotation{
+  width: 350px;
+  color: #aaaaaa;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 20px;
+  line-height: 20px;
+  padding: 10px 20px 10px 20px;
+  background-color: #212121;
+}
+
+.chat-current-user{
+  padding: 7px 1rem 7px 1rem;
   margin: 0;
   width: 100%;
-  text-align: center;
-  border-left: 2px solid black;
-  border-right: 2px solid black;
+  background-color: #212121;
+  border-left: 1px solid #0f0f0f;
+  border-right: 1px solid #0f0f0f;
+  display: flex;
+  align-items: center;
+}
+
+.current-user-content{
+  flex: 1 1 auto;
+  padding-left: 1.125rem;
+}
+
+.current-user-name{
+  font-size: 24px;
+  line-height: 24px;
+  margin: 0;
+}
+
+.current-user-status{
+  color: #8774e1;
+  line-height: 24px;
+  font-size: 16px;
+  margin: 0;
+}
+
+.chat-cross-icon{
+  left: 0;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+}
+
+.chat-cross-el{
+  width: 5px;
+  height: 20px;
+  background-color: white;
+  position: absolute;
+
 }
 
 .message{
   margin-top: 5px;
 }
 
-.user-message-text{
-  padding: 5px;
-  background-color: #777;
-  border-radius: 5px 5px 5px 5px;
+.message-text{
+  padding: 5px 10px 5px 10px;
+  border-radius: 10px 10px 10px 10px;
   max-width: 75%;
+  min-width: 5%;
   word-break: break-word;
+  z-index: 100;
+}
+
+.user-message-text{
+  background-color: #8774e1;
+  border-bottom-right-radius: 0;
 }
 
 .user-message{
   display: flex;
   justify-content: right;
+  align-items: flex-end;
+  margin-right: 6px;
 }
 
 .dialog-message-text{
-  padding: 5px;
-  background-color: #678081;
-  border-radius: 5px 5px 5px 5px;
-  word-break: break-word;
+  background-color: #212121;
+  border-bottom-left-radius: 0;
 }
 
 .dialog-message{
   display: flex;
   justify-content: left;
+  align-items: flex-end;
+  margin-left: 6px;
+}
+
+.user-tail{
+  margin-right: -8.4px;
+  transform: scaleX(-1);
+  background-color: #8774e1;
+}
+
+.dialog-tail{
+  margin-left: -8.4px;
+  background-color: #212121;
+}
+
+.message-tail{
+  position: absolute;
+  width: 11px;
+  height: 20px;
+  display: block;
+  border-radius: 0 0 0 2px;
+}
+
+.user-tail-corrector{
+  transform: rotate(-25deg);
+  margin-right: -20px;
+
+}
+
+.dialog-tail-corrector{
+  transform: rotate(25deg);
+  margin-left: -20px;
+}
+
+.message-tail-corrector{
+  position: absolute;
+  width: 20px;
+  height: 26px;
+  display: block;
+  background-color: #171529;
+  margin-bottom: 0;
+  border-radius: 100%;
+  overflow: hidden;
+  z-index: 3;
 }
 
 .send-area{
-  width:100%;
+  width:60%;
   height: 75px;
-  margin:0;
+  margin-bottom: 30px;
   padding:0;
   display: flex;
   align-items: center;
   justify-content: space-around;
 }
+
 .messages-area{
-  height: 725px;
+  height: 100%;
   width: 100%;
-  padding: 10px;
-  border-bottom: 2px solid black;
+  padding-left: 20%;
+  padding-right: 20%;
   overflow:auto;
+
+}
+
+.chat-empty{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .chat-message-area{
-  height: 800px;
+  height: 100%;
   width: 100%;
-  border: 2px solid black;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.message-input-container{
+  background-color: #212121;
+  width: 80%;
+  padding: 10px 25px;
+  border-radius: 15px 15px 0 15px;
+  display: flex;
+  align-items: center;
 }
 
 .message-input{
-  width: 300px;
-  height: 30px;
-  background-color: #112163;
+  width: 100%;
+  height: 24px;
+  background-color: #212121;
   border: none;
   color: white;
   word-wrap: break-word;
@@ -84,19 +205,21 @@
 }
 
 textarea::-webkit-scrollbar {
-  width: 3px;
+  width: 2px;
+  border-radius: 50%;
 }
 
 textarea::-webkit-scrollbar-track {
 }
 
 textarea::-webkit-scrollbar-thumb {
-  background-color: #0a1644;
+  background-color: #8774e1;
 
 }
 
 .button{
   border: none;
+  border-radius: 50%;
   width: 50px;
   height: 50px;
   color: white;
@@ -104,7 +227,7 @@ textarea::-webkit-scrollbar-thumb {
 }
 
 .message-button{
-  background-color: #0a1644;
+  background-color: #8774e1;
 }
 
 button.disabled{
@@ -112,13 +235,5 @@ button.disabled{
 }
 
 .message-button:hover{
-  border-top: 1px solid gray;
-  border-left:1px solid gray;
-}
-
-.message-button:active{
-  border-bottom: 1px solid gray;
-  border-right: 1px solid gray;
-  border-top: none;
-  border-left: none;
+  background-color: #8774e1;
 }

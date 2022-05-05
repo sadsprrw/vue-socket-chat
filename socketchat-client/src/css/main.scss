@@ -1,29 +1,112 @@
+body{
+  background-color: #112163;
+  height: 100%;
+}
+
+p {
+  margin: 0;
+}
+
+.main-wrap  {
+  overflow-x: hidden;
+}
 
 .main-container{
     width: 100%;
-    min-height: 100%;
     position: absolute;
     display: flex;
     align-items: flex-start;
-    background-color: #112163;
+    flex-direction: column;
+
+}
+
+.main-chat{
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  background-color: #212121;
+  justify-content: center;
+}
+
+.main-graph{
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  background-color: #112163;
 }
 
 .online-people-container{
-  width: 20%;
+  margin-top: 80px;
+  width: 400px;
+  border-left: 1px solid #0f0f0f ;
   color: white;
   position: relative;
+  background-color: #212121;
 }
 
 .chat-container{
-  width: 30%;
+  margin-top: 80px;
+  width: 50%;
+
   color: white;
   position: relative;
+
+
 }
 
 .graph-container{
+  margin-top: 80px;
   position: relative;
-  width: 50%;
+  width: 100%;
   color: white;
+  transition: 1s;
+}
+
+.bm-burger-bars {
+  background-color: white;
+}
+
+.bm-menu{
+  background: black;
+  overflow-y: hidden;
+  padding-top: 0;
+}
+
+.bm-item-list{
+  margin-left: 0;
+}
+
+.bm-item-list>* {
+  padding: 0;
+}
+
+.menu-button{
+  position: absolute;
+}
+
+.bm-burger-button{
+  top: 25px
+}
+
+
+#graph-fade{
+  transition: all 0.8s;
+  transform: translateX(-800px);
+}
+
+.graph-fade-leave-active {
+  transition: all 1s;
+  transform: translateX(-800px);
+}
+
+.graph-fade-enter-from{
+  transform: translateX(-800px);
+}
+.graph-fade-leave-to {
+  transform: translateX(-800px);
 }
 
 

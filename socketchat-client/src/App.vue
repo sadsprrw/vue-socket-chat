@@ -1,29 +1,52 @@
 <template>
   <ChatLogIn :validate="validate"  :on-login="loginUser" v-if="user === null" />
-  <div class="main-container" v-else>
+  <div class="main-wrap" v-else>
+    <div class="main-container" >
+      <ChatHeader :user="user" :on-tab-selected="tabSelected" :current-tab="currentTab"/>
+      <div class="main-chat" >
+<!--        v-if="currentTab === 'Chat'"-->
+          <div :style="currentTab === 'Graph' || currentTab === 'Hybrid' ?
+           'display:none' : ''" class="online-people-container">
+            <OnlinePeople :on-chat-selected="chatSelected" :current-user="currentUserChat"
+                :user-list="onlineUsers" :user="user"  />
+          </div>
+          <div  :style="currentTab === 'Graph' ? 'display:none;' : ''"  class="chat-container">
+            <ChatMessages :close-chat="closeChat" :send-message="sendMessage"
+                          :current-user="currentUserChat" :messages="currentMessages" />
+          </div>
+          <Slide :style="currentTab === 'Chat' ? 'display:none' : ''" width="400"
+                 :burgerIcon="!menuIsOpen"  :isOpen="menuIsOpen" @closeMenu="menuIsOpen = false" >
+            <OnlinePeople  :on-chat-selected="chatSelected" :current-user="currentUserChat"
+                           :user-list="onlineUsers" :user="user"/>
+          </Slide>
+          <transition name="graph-fade">
+            <div id="graph-container"  :style="currentTab === 'Chat' ? 'width:0;' :
+                  currentTab === 'Hybrid' ? 'width: 50%' : ''"
+                  class="graph-container">
 
-    <div class="online-people-container">
-      <OnlinePeople :user-list="onlineUsers" :user="user" :on-chat-selected="chatSelected" />
-      <b-button>123</b-button>
-    </div>
-    <div class="chat-container">
-      <ChatMessages :send-message="sendMessage" :current-user="currentUserChat" :messages="currentMessages" />
-    </div>
-    <div class="graph-container">
-      <ChatGraph :user-list="onlineUsers" :connection-list="chatConnections" ref="messageAnimation"/>
+              <ChatGraph :select-user-on-graph="selectUserOnGraph"
+                         :user-list="onlineUsers" :connection-list="chatConnections" ref="chatGraph"/>
+            </div>
+          </transition>
+      </div>
+<!--      <div class="main-graph" v-else-if="currentTab === 'Graph'">-->
+<!--        -->
+<!--      </div>-->
     </div>
   </div>
-
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+
 import io from 'socket.io-client'
 
 import ChatMessages from '@/components/ui-modules/ChatMessages.vue'
 import OnlinePeople from "@/components/ui-modules/OnlinePeople.vue";
 import ChatGraph from "@/components/ui-modules/ChatGraph.vue";
 import ChatLogIn from "@/components/ui-modules/ChatLogIn.vue";
+import ChatHeader from "@/components/ui-modules/ChatHeader.vue";
+import { Slide } from 'vue3-burger-menu'
 
 import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/types/ChatTypes';
 @Options({
@@ -36,14 +59,18 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
       currentMessages: null,
       onlineUsers: {} as OnlineUsers,
       socket:io('http://localhost:8000'),
-      validate: false
+      validate: false,
+      menuIsOpen: false,
+      currentTab: 'Chat',
     }
   },
   components: {
     ChatMessages,
     OnlinePeople,
     ChatGraph,
-    ChatLogIn
+    ChatLogIn,
+    ChatHeader,
+    Slide
   },
   mounted() {
     this.socket.on('MESSAGE', (socket: ChatMessage) => {
@@ -56,7 +83,7 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
       this.onlineUsers = socket;
     })
     this.socket.on('NEW_USER', (socket: NewUserData) => {
-      this.onlineUsers[socket['id']] = {'username': socket['username'], 'color': socket['color']}
+      this.onlineUsers[socket['id']] = {'username': socket['username'], 'color': socket['color'], 'id': socket['id']}
     })
     this.socket.on('DELETE_USER', (socket: NewUserData) => {
       delete this.onlineUsers[socket['id']]
@@ -77,10 +104,11 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
       this.chatConnections.push(socket)
     })
     this.socket.on('MESSAGE_ANIMATION', (socket: Connection) => {
-      this.$refs.messageAnimation.message(socket['source'], socket['target'])
+      setTimeout(this.$refs.chatGraph.message, 300, socket['source'], socket['target'])
     })
   },
   methods: {
+
     loginUser(username: string, color: string){
       if (this.userExists(username) || username.trim() === ''){
         this.validate = true
@@ -89,6 +117,11 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
         this.user = {'name': username,'color': color}
         this.socket.emit('login', this.user)
       }
+    },
+    checkMenu(){
+      if (!this.menuIsOpen)
+        return 'left: 0;'
+      else return 'left: -400px;'
     },
     sendMessage(message: string) {
       if (this.currentUserChat != null) {
@@ -108,13 +141,35 @@ import {ChatMessage, OnlineUsers, NewUserData, UserData, Connection} from '@/typ
         }
       }
     },
-    chatSelected(index: string, username: string){
-      this.currentUserChat = {'id': index, 'username': username}
+    tabSelected(tab: string){
+      if (this.currentTab !== tab)  {
+        if(tab === 'Hybrid')
+          this.$refs.chatGraph.updateWidth(window.innerWidth/2)
+        if(tab === 'Graph')
+          this.$refs.chatGraph.updateWidth(window.innerWidth)
+        this.currentTab = tab
+      }
+    },
+    chatSelected(index: string, username: string, color: string){
+      this.currentUserChat = {'id': index, 'username': username, 'color': color}
       this.currentMessages = this.allMessages[this.currentUserChat['id']]
     },
     userExists(username: string){
       const onlineUsersValues: UserData[] = Object.values(this.onlineUsers)
       return onlineUsersValues.find((value : UserData)  => (value['username'] === username.trim()));
+    },
+    closeChat(){
+      this.currentUserChat = null;
+    },
+    selectUserOnGraph(username: string){
+      if(this.user['name'] !== username){
+        if(this.currentTab === 'Graph')
+          this.tabSelected('Hybrid')
+        let chosenUser = this.userExists(username)
+        if(chosenUser)
+          this.chatSelected(chosenUser['id'], chosenUser['username'], chosenUser['color'])
+          console.log(chosenUser)
+      }
     }
   }
 })
@@ -122,5 +177,6 @@ export default class App extends Vue {}
 </script>
 
 <style lang="scss">
+
 @import "css/main.scss";
 </style>

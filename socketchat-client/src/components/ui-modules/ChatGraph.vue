@@ -1,6 +1,5 @@
 <template>
   <div class="graph">
-    <h1 class="graph-header">Users Graph</h1>
     <svg :width="width" :height="height" class="graph-svg" id="graph"></svg>
   </div>
 </template>
@@ -17,6 +16,10 @@ export default {
     },
     connectionList: {
       require: true
+    },
+    selectUserOnGraph: {
+      require: true,
+      type: Function
     }
   },
   data() {
@@ -26,8 +29,8 @@ export default {
       simulation: null,
       link: null,
       node: null,
-      width: window.innerWidth/2,
-      height: 800,
+      width: window.innerWidth,
+      height: window.innerHeight - 80,
       // simulationTime: 10000,
       startTime: 0
     }
@@ -83,8 +86,13 @@ export default {
             msg_circle.remove()
           })
     },
+    updateWidth: function (width){
+      this.width = width
+      this.restart()
+    },
     restart () {
-      this.startTime = Date.now()
+      let func = this.selectUserOnGraph
+      this.simulation.force('x', d3.forceX().x(this.width/2))
 
       this.node = this.node.data(this.nodes, function (d) { return d.id })
       this.node.exit().remove()
@@ -95,6 +103,7 @@ export default {
           .attr('id', function (d) { return d.id })
           .attr('r', 15)
           .call(this.drag())
+          .on('dblclick', function (event, d) { func(d.id) })
           .merge(this.node)
 
       this.link = this.link.data(this.links, function (d) {
@@ -122,17 +131,14 @@ export default {
     },
     drag(){
       const dragstarted = d => {
-
         d.fx = d.x;
         d.fy = d.y;
       };
       const dragged = (event, d) => {
-        console.log(event)
         d.fx = event.x;
         d.fy = event.y;
       };
       const dragended = d => {
-
         d.fx = null;
         d.fy = null;
       };
@@ -168,7 +174,8 @@ export default {
       })
 
       this.restart()
-    }
+    },
+
   },
 
   watch: {

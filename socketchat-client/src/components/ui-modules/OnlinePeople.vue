@@ -3,14 +3,10 @@
     <h1 class="people-header">Online people</h1>
     <div class="people-list-container">
       <ul class="people-list">
-        <li class="current-user">
-          <div class="user-icon" :style="getStyleIcon(user['color'])"></div>
-          <h3 class="user-name">{{ user['name'] }}</h3>
-        </li>
         <li  class="people-user" v-for="(val, inx) in userList" :key="val['username']"
-          v-on:click="onChatSelected(inx, val['username']); selectedUser = val['username']"
+          v-on:click="onChatSelected(inx, val['username'], val['color'])"
           :title="val['username']"
-          v-bind:class="user['name'] === val['username'] ? 'disabled' : selectedUser === val['username'] ? 'active' : ''">
+          v-bind:class="bindUserClass(val['username'])">
           <div class="user-icon" :style="getStyleIcon(val['color'])"></div>
           <h3 class="user-name">{{ val['username'] }}</h3>
         </li>
@@ -33,17 +29,29 @@ export default {
     user: {
       require: true
     },
+    currentUser: {
+      require: true
+    }
   },
   data () {
     return {
-      selectedUser: null,
+
     }
   },
   methods: {
     getStyleIcon(color){
       return 'background-color:' + color
+    },
+    bindUserClass(username){
+      if(username === this.user['name'])
+        return 'disabled'
+      if(this.currentUser) {
+        if (username === this.currentUser['username'])
+          return 'active'
+      }
+      return ''
     }
-  }
+  },
 }
 </script>
 

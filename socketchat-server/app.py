@@ -27,7 +27,8 @@ def client_connect():
 def user_login(data):
     users_online[request.sid] = {
         'username': data['name'],
-        'color': data['color']
+        'color': data['color'],
+        'id': request.sid
     }
     emit('NEW_USER', {'id': request.sid, 'username': data['name'], 'color': data['color']}, broadcast=True)
     emit('CONNECTION_DATA', connections)

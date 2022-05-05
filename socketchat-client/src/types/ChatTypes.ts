@@ -12,7 +12,8 @@ export interface ChatMessageType{
 
 export interface UserData{
     username: string,
-    color: string
+    color: string,
+    id: string
 }
 
 export interface OnlineUsers{
