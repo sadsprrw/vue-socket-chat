@@ -38,8 +38,7 @@ export default {
     getActiveTabStyle(tab){
       if (this.currentTab === tab)
         return 'chat-tab active'
-      else
-        return 'chat-tab'
+      return 'chat-tab'
     }
   }
 }
